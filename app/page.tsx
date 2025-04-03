@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
 export default function Home() {
   const router = useRouter();
 
@@ -9,17 +10,10 @@ export default function Home() {
     router.push('/login')
   }
   return (
-    <div className="bg-[#edd4ad] min-h-screen px-22 py-4 font-serif">
+    <div className="bg-[#fbdca9] min-h-screen px-22 py-4 font-serif">
       {/* Navbar */}
-      <nav className="flex justify-between items-center py-4 border-b border-[#c4a484]">
-        <h1 className="text-6xl text-[#4a3222]">ReadVault</h1>
-        <div className="flex space-x-6 text-[#4a3222]">
-          <a href="#" className="hover:underline">Home</a>
-          <a href="#" className="hover:underline">Dashboard</a>
-          <button className="border px-4 py-1 rounded  text-[#4a3222] hover:bg-[#8b5a2b]" onClick={handleUserLogin}>Login</button>
-        </div>
-      </nav>
       
+      <Navbar/>
       {/* Main Content */}
       <div className="flex flex-col md:flex-row items-center justify-between mt-16">
         {/* Left Section */}
