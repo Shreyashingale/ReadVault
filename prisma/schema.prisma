@@ -8,17 +8,23 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())  
+  id        String  @id @default(uuid())  
   name      String?  
-  email     String   @unique  
-  password  String   // Hashed password  
+  email     String  @unique  
+  password  String  // Hashed password  
   createdAt DateTime @default(now())
+  
+  books     Book[]  // One user can have multiple books
 }
 
 model Book {
   id         String   @id @default(uuid())
   title      String
   createdAt  DateTime @default(now())
+
+  userId     String   // Foreign key to User
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   lessons    Lesson[]
   dictionary Dictionary[]
 }

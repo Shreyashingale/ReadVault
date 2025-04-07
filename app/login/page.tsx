@@ -3,6 +3,7 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ export default function LoginPage() {
       password,
       redirect: false,
     });
+    console.log("login error:  " , result);
 
     if (result?.error) {
       alert("Invalid credentials");
@@ -27,7 +29,7 @@ export default function LoginPage() {
   return (
     <div className="bg-[#edd4ad] min-h-screen flex flex-col px-22 py-4 items-center font-serif">
       {/* Page Title */}
-      <h1 className="text-5xl text-[#4a3222] self-start">ReadVault</h1>
+      <Link href="/"><h1 className="text-5xl text-[#4a3222] self-start">ReadVault</h1></Link>
 
       {/* Main Content */}
       <div className="flex flex-col md:flex-row items-center justify-center mt-12 md:mt-24 w-full max-w-4xl">

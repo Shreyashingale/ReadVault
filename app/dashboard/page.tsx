@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const books = [
     "Book 1", "Book 2", "Book 3", "Book 4", "Book 5", "Book 6", "Book 7", "Book 8"
@@ -11,6 +14,9 @@ const books = [
 const Dashboard = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isOpen, setIsOpen] = useState(false);
+
+    const { data: backbooks, mutate } = useSWR('/api/books', fetcher);
+    console.log("Back books : " , backbooks);
 
     const booksPerPage = 4;
 

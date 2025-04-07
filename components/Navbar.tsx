@@ -1,6 +1,9 @@
+
+'use client';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signOut } from 'next-auth/react';
 
 export default function Navbar() {
     const router = useRouter();
@@ -36,9 +39,16 @@ export default function Navbar() {
               Dashboard
             </Link>
             <button
+            onClick={handleUserLogin}
               className="border px-4 py-1 rounded text-[#4a3222] hover:bg-[#8b5a2b] block md:inline"
             >
               Login
+            </button>
+            <button
+              className="border px-4 py-1 rounded text-[#4a3222] hover:bg-[#8b5a2b] block md:inline"
+              onClick={() => signOut({ callbackUrl: '/login' })}
+            >
+              Logout
             </button>
           </div>
         </nav>
