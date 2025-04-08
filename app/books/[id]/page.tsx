@@ -1,7 +1,11 @@
 import Link from "next/link";
 
-export default function BookDetailPage({ params }: { params: { id: string } }) {
-  // This is a placeholder — fetch book, lessons, and dictionary using the id
+type Props = {
+  params: { id: string };
+};
+
+export default async function BookDetailPage() {
+
   const book = {
     title: "Book Title",
     author: "Author",
