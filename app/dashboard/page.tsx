@@ -1,23 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import useSWR from 'swr';
+import { useSWRConfig } from "swr";
+import Link from "next/link";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const books = [
-    "Book 1", "Book 2", "Book 3", "Book 4", "Book 5", "Book 6", "Book 7", "Book 8"
-];
+
 
 const Dashboard = () => {
+
+    type Book = {
+        id: string;
+        title: string;
+        createdAt: string; // `Date` if you're parsing it; string if it's raw JSON
+        userId: string;
+        // optionally:
+        // lessons: Lesson[];
+        // dictionary: Dictionary[];
+    };
+    const { mutate } = useSWRConfig();
+
     const [currentPage, setCurrentPage] = useState(1);
     const [isOpen, setIsOpen] = useState(false);
+    const [books, setBooks] = useState<Book[]>([]);
+    const [bookTitle, setBookTitle] = useState("");
 
-    const { data: backbooks, mutate } = useSWR('/api/books', fetcher);
-    console.log("Back books : " , backbooks);
 
+    const { data: backbooks } = useSWR<Book[]>('/api/books', fetcher);
+    console.log("Back books : ", backbooks);
+    // Sync `backbooks` to local state only when it changes
+    useEffect(() => {
+        if (backbooks) {
+            setBooks(backbooks);
+            console.log("Back books : ", backbooks);
+        }
+    }, [backbooks]);
     const booksPerPage = 4;
 
     const indexOfLastBook = currentPage * booksPerPage;
@@ -25,6 +46,41 @@ const Dashboard = () => {
     const currentBooks = books.slice(indexOfFirstBook, indexOfLastBook);
 
     const totalPages = Math.ceil(books.length / booksPerPage);
+
+
+    const handleSaveBook = async () => {
+        if (!bookTitle.trim()) {
+            alert("Please enter a book title.");
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/books", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ title: bookTitle }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                alert(data.message || "Failed to save book");
+                return;
+            }
+            await mutate("/api/books"); // 💥 This tells SWR to refetch
+
+            const data = await res.json();
+            console.log("Book created:", data);
+            setBookTitle("");       // Clear input
+            setIsOpen(false);       // Close modal
+            // Optionally refresh book list here if needed
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Something went wrong");
+        }
+    };
+
 
     return (
         <div className="bg-[#fbdca9] min-h-screen p-8 font-serif">
@@ -41,14 +97,16 @@ const Dashboard = () => {
                         <button className="mt-2 mb-3 px-6 py-3 bg-[#a95f20] text-white rounded-lg shadow-md hover:bg-brown-700" onClick={() => setIsOpen(true)}>
                             Add Book
                         </button>
-                        {currentBooks.map((book, index) => (
-                            <button
-                                key={index}
-                                className="block w-full text-left px-4 py-2 bg-[#fcdda9] border border-brown-600 rounded-lg text-brown-900 hover:bg-brown-300"
-                            >
-                                {book}
-                            </button>
+                        {currentBooks?.map((book) => (
+                            <Link key={book.id} href={`/books/${book.id}`}>
+                                <button
+                                    className="block w-full text-left px-4 py-2 bg-[#fcdda9] border border-brown-600 rounded-lg text-brown-900 hover:bg-brown-300"
+                                >
+                                    {book.title}
+                                </button>
+                            </Link>
                         ))}
+
                     </div>
 
                     {/* Pagination */}
@@ -131,6 +189,8 @@ const Dashboard = () => {
                             <label className="block text-brown-800 font-semibold">Book Name</label>
                             <input
                                 type="text"
+                                value={bookTitle}
+                                onChange={(e) => setBookTitle(e.target.value)}
                                 className="w-full p-2 border border-brown-600 rounded-lg mb-3 bg-[#fcdda9]"
                             />
 
@@ -140,30 +200,8 @@ const Dashboard = () => {
                                 type="text"
                                 className="w-full p-2 border border-brown-600 rounded-lg mb-3 bg-[#fcdda9]"
                             />
-
-                            {/* Reading Start Date */}
-                            <label className="block text-brown-800 font-semibold">Reading Start Date</label>
-                            <input
-                                type="date"
-                                className="w-full p-2 border border-brown-600 rounded-lg mb-3 bg-[#fcdda9]"
-                            />
-
-                            {/* Status Dropdown */}
-                            <label className="block text-brown-800 font-semibold">Status</label>
-                            <select className="w-full p-2 border border-brown-600 rounded-lg mb-3 bg-[#fcdda9]">
-                                <option>Not Started</option>
-                                <option>In Progress</option>
-                                <option>Completed</option>
-                            </select>
-
-                            {/* Notes */}
-                            <label className="block text-brown-800 font-semibold">Notes</label>
-                            <textarea
-                                className="w-full p-2 border border-brown-600 rounded-lg bg-[#fcdda9]"
-                            ></textarea>
-
                             {/* Submit Button */}
-                            <button className="mt-4 px-6 py-2 bg-[#a95f20] text-white font-semibold rounded-lg shadow-md hover:bg-brown-700 w-full">
+                            <button onClick={handleSaveBook} className="mt-4 px-6 py-2 bg-[#a95f20] text-white font-semibold rounded-lg shadow-md hover:bg-brown-700 w-full">
                                 Save Book
                             </button>
                         </div>
