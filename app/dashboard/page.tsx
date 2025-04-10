@@ -85,7 +85,7 @@ const Dashboard = () => {
     return (
         <div className="bg-[#fbdca9] min-h-screen p-8 font-serif">
             <Navbar />
-            <div className="max-w-4xl mx-auto flex flex-wrap justify-between items-start">
+            <div className="max-w-4xl mt-10 mx-auto flex flex-wrap justify-between items-start">
                 {/* Left Section - Dashboard */}
                 <div className="w-full md:w-1/2 mb-6 md:mb-0">
                     <h1 className="text-4xl md:text-6xl text-brown-800">Dashboard</h1>

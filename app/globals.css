@@ -1,1 +1,15 @@
 @import 'tailwindcss';
+
+/* globals.css */
+body {
+    cursor: url('/help.cur'), auto;
+}
+
+button,
+a,
+input,
+textarea,
+select,
+label {
+    cursor: url('/link.cur'), pointer;
+}
